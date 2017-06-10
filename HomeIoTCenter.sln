@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeIoTCenter", "HomeIoTCenter\HomeIoTCenter.csproj", "{8679A031-B524-4492-9FA0-838FEAF1C3CE}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartLamp", "SmartLamp\SmartLamp.vcxproj", "{3C521C2B-08DA-49D3-A1E2-E532859474F4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP8266Center", "ESP8266Center\ESP8266Center.vcxproj", "{8DC09205-0E28-46AC-9DB9-327922A3D02B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoWeatherStation", "ArduinoWeatherStation\ArduinoWeatherStation.vcxproj", "{808E0E3A-A880-4244-BF64-3C3440C18519}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,12 @@ Global
 		{8DC09205-0E28-46AC-9DB9-327922A3D02B}.Release|Any CPU.ActiveCfg = Release|Win32
 		{8DC09205-0E28-46AC-9DB9-327922A3D02B}.Release|x86.ActiveCfg = Release|Win32
 		{8DC09205-0E28-46AC-9DB9-327922A3D02B}.Release|x86.Build.0 = Release|Win32
+		{808E0E3A-A880-4244-BF64-3C3440C18519}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{808E0E3A-A880-4244-BF64-3C3440C18519}.Debug|x86.ActiveCfg = Debug|Win32
+		{808E0E3A-A880-4244-BF64-3C3440C18519}.Debug|x86.Build.0 = Debug|Win32
+		{808E0E3A-A880-4244-BF64-3C3440C18519}.Release|Any CPU.ActiveCfg = Release|Win32
+		{808E0E3A-A880-4244-BF64-3C3440C18519}.Release|x86.ActiveCfg = Release|Win32
+		{808E0E3A-A880-4244-BF64-3C3440C18519}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

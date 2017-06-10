@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
+    "\\ArduinoNRFCenter",
     "\\HomeIoTCenter"
   ],
-  "SelectedNode": "\\HomeIoTCenter.sln",
+  "SelectedNode": "\\ArduinoNRFCenter\\ArduinoNRFCenter.ino",
   "PreviewInSolutionExplorer": false
 }
