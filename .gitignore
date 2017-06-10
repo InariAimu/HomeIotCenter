@@ -1,0 +1,7 @@
+
+*.suo
+
+__vm/
+Debug/
+Release/
+obj/

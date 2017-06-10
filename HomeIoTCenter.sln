@@ -1,0 +1,68 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeIoTCenter", "HomeIoTCenter\HomeIoTCenter.csproj", "{8679A031-B524-4492-9FA0-838FEAF1C3CE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoNRFCenter", "ArduinoNRFCenter\ArduinoNRFCenter.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoNRFNode", "ArduinoNRFNode\ArduinoNRFNode.vcxproj", "{E77D3BBC-9A65-42AE-940A-3F7EC15477E7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GenericESP8266Node", "GenericESP8266Node\GenericESP8266Node.vcxproj", "{B391C2CA-714E-450D-A476-2ADB6C245982}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartLamp", "SmartLamp\SmartLamp.vcxproj", "{3C521C2B-08DA-49D3-A1E2-E532859474F4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP8266Center", "ESP8266Center\ESP8266Center.vcxproj", "{8DC09205-0E28-46AC-9DB9-327922A3D02B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8679A031-B524-4492-9FA0-838FEAF1C3CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8679A031-B524-4492-9FA0-838FEAF1C3CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8679A031-B524-4492-9FA0-838FEAF1C3CE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8679A031-B524-4492-9FA0-838FEAF1C3CE}.Debug|x86.Build.0 = Debug|Any CPU
+		{8679A031-B524-4492-9FA0-838FEAF1C3CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8679A031-B524-4492-9FA0-838FEAF1C3CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8679A031-B524-4492-9FA0-838FEAF1C3CE}.Release|x86.ActiveCfg = Release|Any CPU
+		{8679A031-B524-4492-9FA0-838FEAF1C3CE}.Release|x86.Build.0 = Release|Any CPU
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Any CPU.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{E77D3BBC-9A65-42AE-940A-3F7EC15477E7}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{E77D3BBC-9A65-42AE-940A-3F7EC15477E7}.Debug|x86.ActiveCfg = Debug|Win32
+		{E77D3BBC-9A65-42AE-940A-3F7EC15477E7}.Debug|x86.Build.0 = Debug|Win32
+		{E77D3BBC-9A65-42AE-940A-3F7EC15477E7}.Release|Any CPU.ActiveCfg = Release|Win32
+		{E77D3BBC-9A65-42AE-940A-3F7EC15477E7}.Release|x86.ActiveCfg = Release|Win32
+		{E77D3BBC-9A65-42AE-940A-3F7EC15477E7}.Release|x86.Build.0 = Release|Win32
+		{B391C2CA-714E-450D-A476-2ADB6C245982}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{B391C2CA-714E-450D-A476-2ADB6C245982}.Debug|x86.ActiveCfg = Debug|Win32
+		{B391C2CA-714E-450D-A476-2ADB6C245982}.Debug|x86.Build.0 = Debug|Win32
+		{B391C2CA-714E-450D-A476-2ADB6C245982}.Release|Any CPU.ActiveCfg = Release|Win32
+		{B391C2CA-714E-450D-A476-2ADB6C245982}.Release|x86.ActiveCfg = Release|Win32
+		{B391C2CA-714E-450D-A476-2ADB6C245982}.Release|x86.Build.0 = Release|Win32
+		{3C521C2B-08DA-49D3-A1E2-E532859474F4}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{3C521C2B-08DA-49D3-A1E2-E532859474F4}.Debug|x86.ActiveCfg = Debug|Win32
+		{3C521C2B-08DA-49D3-A1E2-E532859474F4}.Debug|x86.Build.0 = Debug|Win32
+		{3C521C2B-08DA-49D3-A1E2-E532859474F4}.Release|Any CPU.ActiveCfg = Release|Win32
+		{3C521C2B-08DA-49D3-A1E2-E532859474F4}.Release|x86.ActiveCfg = Release|Win32
+		{3C521C2B-08DA-49D3-A1E2-E532859474F4}.Release|x86.Build.0 = Release|Win32
+		{8DC09205-0E28-46AC-9DB9-327922A3D02B}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{8DC09205-0E28-46AC-9DB9-327922A3D02B}.Debug|x86.ActiveCfg = Debug|Win32
+		{8DC09205-0E28-46AC-9DB9-327922A3D02B}.Debug|x86.Build.0 = Debug|Win32
+		{8DC09205-0E28-46AC-9DB9-327922A3D02B}.Release|Any CPU.ActiveCfg = Release|Win32
+		{8DC09205-0E28-46AC-9DB9-327922A3D02B}.Release|x86.ActiveCfg = Release|Win32
+		{8DC09205-0E28-46AC-9DB9-327922A3D02B}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
