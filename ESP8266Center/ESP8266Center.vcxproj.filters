@@ -17,9 +17,4 @@
   <ItemGroup>
     <None Include="ESP8266Center.ino" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="__vm\.ESP8266Center.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
 </Project>

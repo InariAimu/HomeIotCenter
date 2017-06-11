@@ -17,7 +17,7 @@
 const uint8_t NRF_CE_PIN = 4;
 const uint8_t NRF_CSN_PIN = 5;
 
-#define NRF_DEVICE_ADDR "dev00"
+#define NRF_DEVICE_ADDR "Lamp0"
 
 const uint8_t ManSensorPin = 3;
 
@@ -27,8 +27,8 @@ const uint8_t EchoPin = 6;
 const uint8_t Yellow_Addr = 0x62;
 const uint8_t White_Addr = 0x63;
 
-const uint8_t AT24C32_Addr = 0x68;
-const uint8_t DS1307_Addr = 0x50;
+const uint8_t AT24C32_Addr = 0x50;
+const uint8_t DS1307_Addr = 0x68;
 
 //Generic NrfPacket Properties
 //ID:		packet id 0-255
@@ -110,9 +110,9 @@ void setup() {
 	Mirf.init();
 	Mirf.setRADDR((byte *)NRF_DEVICE_ADDR);
 	Mirf.payload = 32;
+	Mirf.configRegister(EN_AA, 0);
 	Mirf.config();
 
-	Mirf.configRegister(EN_AA, 0);
 	Serial.println("nrf init");
 }
 
@@ -166,55 +166,71 @@ void loop() {
 		uint16_t yb = 0;
 		uint16_t wb = 0;
 		GetTimeBrightness(RTC.getHours(), RTC.getMinutes(), &yb, &wb);
+		/*Serial.print(RTC.getHours());
+		Serial.print(':'); 
+		Serial.print(RTC.getMinutes());
+		Serial.print(':');
+		Serial.println(RTC.getSeconds());*/
 		Yellow_Val = BrightnessToVoltage(yb, CHANNEL_YELLOW);
 		White_Val = BrightnessToVoltage(wb, CHANNEL_WHITE);
 		SetMCP4725(Yellow_Addr, Yellow_Val);
 		SetMCP4725(White_Addr, White_Val);
-		delay(1000);
 	}
 
-	if (!Mirf.isSending() && Mirf.dataReady()) {
-		Mirf.getData(data);
-		NrfPacket np = (NrfPacket)data;
-		switch (np->Type)
+	long t = millis();
+	while (millis() - t < 1000)
+	{
+		if (Mirf.dataReady())
 		{
-		case 'S':
-		{
-			Pt_SetLamp pl = (Pt_SetLamp)(np->Payload);
-			Yellow_Val = BrightnessToVoltage(pl->Yellow, CHANNEL_YELLOW);
-			White_Val = BrightnessToVoltage(pl->White, CHANNEL_WHITE);
-			SetMCP4725(Yellow_Addr, Yellow_Val);
-			SetMCP4725(White_Addr, White_Val);
-			Mode_Lamp = Mode_Manual;
-			break;
-		}
-		case 'C':
-		{
-			Pt_SetClock pc = (Pt_SetClock)(np->Payload);
-			RTC.setYear(pc->Year);
-			RTC.setMonth(pc->Month);
-			RTC.setDate(pc->Day);
-			RTC.setDayOfWeek(pc->Weekday);
-			RTC.setHours(pc->Hour);
-			RTC.setMinutes(pc->Minute);
-			RTC.setSeconds(pc->Second);
-			if (pc->TimeMode == 'A')
+			Serial.println("get nrf packet");
+			Mirf.getData(data);
+			NrfPacket np = (NrfPacket)data;
+			switch (np->Type)
 			{
-				RTC.setAM();
-			}
-			else
+			case 'S':
 			{
-				RTC.set24h();
+				Pt_SetLamp pl = (Pt_SetLamp)(np->Payload);
+				Yellow_Val = BrightnessToVoltage(pl->Yellow, CHANNEL_YELLOW);
+				White_Val = BrightnessToVoltage(pl->White, CHANNEL_WHITE);
+				SetMCP4725(Yellow_Addr, Yellow_Val);
+				SetMCP4725(White_Addr, White_Val);
+				Mode_Lamp = Mode_Manual;
+				break;
 			}
-			if (RTC.isStopped())RTC.start();
+			case 'C':
+			{
+				Pt_SetClock pc = (Pt_SetClock)(np->Payload);
+				RTC.stop();
+				RTC.setYear(pc->Year);
+				RTC.setMonth(pc->Month);
+				RTC.setDate(pc->Day);
+				RTC.setDayOfWeek(pc->Weekday);
+				RTC.setHours(pc->Hour);
+				RTC.setMinutes(pc->Minute);
+				RTC.setSeconds(pc->Second);
+				if (pc->TimeMode == 'A')
+				{
+					RTC.setAM();
+				}
+				else
+				{
+					RTC.set24h();
+				}
+				RTC.setClock();
+				if (RTC.isStopped())RTC.start();
+				break;
+			}
+			case 'Q':
+			{
+				break;
+			}
+			}
+
 			break;
-		}
-		case 'Q':
-		{
-			break;
-		}
 		}
 	}
+
+
 }
 
 uint16_t BrightnessToVoltage(int16_t brightness,int16_t channel)

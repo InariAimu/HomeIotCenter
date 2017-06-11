@@ -5,7 +5,10 @@
 */
 
 #include <Adafruit_NeoPixel.h>
+const uint8_t LED_PIN = 9;
+Adafruit_NeoPixel LED_Strip = Adafruit_NeoPixel(8, LED_PIN, NEO_GRB + NEO_KHZ800);
 
+const uint8_t PIN_BatteryVoltage = A0;
 
 #include <SPI.h>
 #include <Mirf.h>
@@ -17,6 +20,7 @@
 const uint8_t PIN_NRF_CE = 4;
 const uint8_t PIN_NRF_CSN = 5;
 const uint8_t PayLoad_Length = 32;
+uint8_t data[32];
 
 typedef struct _NrfPacket
 {
@@ -47,23 +51,28 @@ const uint8_t I2C_INT_PIN = 6;
 volatile uint8_t I2C_STAT = 0;
 String I2C_Buffer;
 
+typedef struct _Pt_SetClock
+{
+	uint8_t Year;
+	uint8_t Month;
+	uint8_t Day;
+	uint8_t Weekday;
+	uint8_t Hour;
+	uint8_t Minute;
+	uint8_t Second;
+	uint8_t TimeMode;
+}*Pt_SetClock;
 
 // the setup function runs once when you press reset or power the board
 void setup() 
 {
-	Serial.begin(9600);
+	Serial.begin(115200);
 
-	pinMode(I2C_INT_PIN, OUTPUT);
-	digitalWrite(I2C_INT_PIN, HIGH);
+	LED_Strip.begin();
+	LED_Strip.show();
+	delay(100);
 
-	Mirf.spi = &MirfHardwareSpi;
-	Mirf.cePin = PIN_NRF_CE;
-	Mirf.csnPin = PIN_NRF_CSN;
-	Mirf.init();
-	Mirf.setRADDR((byte *)NRF_DEVICE_ADDR);
-	Mirf.payload = PayLoad_Length;
-	Mirf.config();
-	Mirf.configRegister(EN_AA, 0);
+	Serial1.begin(115200);
 	delay(100);
 
 	Wire.begin(0x08);
@@ -71,7 +80,23 @@ void setup()
 	Wire.onRequest(I2C_OnRequest);
 	delay(100);
 
+	pinMode(I2C_INT_PIN, OUTPUT);
+	digitalWrite(I2C_INT_PIN, HIGH);
+	delay(1000);
+
+	Mirf.spi = &MirfHardwareSpi;
+	Mirf.cePin = 4;
+	Mirf.csnPin = 5;
+	Mirf.init();
+	Mirf.setRADDR((byte *)NRF_DEVICE_ADDR);
+	Mirf.payload = 32;
+	Mirf.configRegister(EN_AA, 0);
+	Mirf.config();
+	delay(100);
+
 	Serial.print("Init");
+
+	Serial1.println("CLS(0);");
 }
 
 // the loop function runs over and over again until power down or reset
@@ -79,28 +104,120 @@ void loop()
 {
 	if (Serial.available())
 	{
-		I2C_Buffer = Serial.readStringUntil('\n');
-		Serial.println(I2C_Buffer);
-		Send_I2C();
+		char c = Serial.read();
+		if (c == 'I')
+		{
+			I2C_Buffer = Serial.readStringUntil('\n');
+			Serial.println(I2C_Buffer);
+			Send_I2C();
+		}
+		else if (c == 'D')
+		{
+			uint8_t datat[32];
+			Serial.println("send nrf lamp info");
+			datat[0] = 2;
+			datat[1] = 10;
+			Mirf.setTADDR((uint8_t*)"iotc1");
+			Mirf.send(datat);
+			while (Mirf.isSending());
+			Serial.readStringUntil('\n');
+		}
+		else
+		{
+			Serial.println("send nrf lamp info");
+			((NrfPacket)data)->Id = (uint8_t)0;
+			((NrfPacket)data)->Type = 'C';
+			((NrfPacket)data)->Options = (uint8_t)0;
+			Pt_SetClock pc = (Pt_SetClock)(((NrfPacket)data)->Payload);
+			pc->Year = (uint8_t)17;
+			pc->Month = (uint8_t)6;
+			pc->Day = (uint8_t)11;
+			pc->Hour = (uint8_t)21;
+			pc->Minute = (uint8_t)52;
+			pc->Second = (uint8_t)0;
+			pc->Weekday = (uint8_t)7;
+			pc->TimeMode = '2';
+			for (int i = 0; i < 16; i++)
+			{
+				Serial.print(data[i]);
+				Serial.print(' ');
+			}
+			Serial.println();
+			Mirf.setTADDR((uint8_t*)"Lamp0");
+			Mirf.send(data);
+			while (Mirf.isSending())
+			{
+
+			}
+			Serial.println("finished sending");
+			Serial.readStringUntil('\n');
+		}
 	}
 
-	if (!Mirf.isSending() && Mirf.dataReady())
+	if (Mirf.dataReady())
 	{
-		byte data[PayLoad_Length];
 		Mirf.getData(data);
 
 		WeatherStationData wsd = (WeatherStationData)data;
 
-		double batteryVoltage = (double)wsd->BatteryVolt_Raw * 5 / 1024;
+		double batteryVoltage = (double)wsd->BatteryVolt_Raw * 5 / 1023;
+		double rainVoltage = (double)(1023 - wsd->RainVolt_Raw) * 5 / 1023;
 
-		Serial.print("Device:");
+		Serial1.print("DS16(0,0,'Arduino Weather Station',15);");
+
+		int selfBattRaw = analogRead(A0);
+		double selfBattVolt= (double)selfBattRaw * 5 / 1023;
+		if (selfBattVolt < 2.0f)
+		{
+			Serial1.println("DS16(0,16,'DC Line ',2);");
+		}
+		else
+		{
+			Serial1.print("DS16(0,16,'");
+			Serial1.print(selfBattVolt);
+			Serial1.print("V   ',15);");
+		}
+
+		Serial1.print("DS16(0,32,'Packet: ");
+		Serial1.print(wsd->Packet_Id);
+		Serial1.print("   ',15);");
+
+		Serial1.print("DS16(0,48,'Remote Battery: ");
+		Serial1.print(batteryVoltage);
+		Serial1.print("V ',15);");
+
+		Serial1.print("DS16(0,64,'");
+		Serial1.print(wsd->Temperature);
+		Serial1.print("C  ");
+		Serial1.print(wsd->Humidity);
+		Serial1.print("%RH  ',15);"); 
+		
+		Serial1.print("DS16(0,80,'");
+		Serial1.print(wsd->AirPressure);
+		Serial1.print("hPa  ");
+		Serial1.print(wsd->Brightness);
+		Serial1.print("Lx  ',15);");
+
+		Serial1.print("DS16(0,96,'Dust: ");
+		Serial1.print(wsd->DustVolt);
+		Serial1.print("V  Rain: ");
+		Serial1.print(rainVoltage);
+		Serial1.print("V  ',15);");
+		Serial1.println();
+
+
+		Serial.print(selfBattVolt);
+		Serial.print("V Device:");
 		Serial.print(wsd->Device_Id);
 		Serial.print(" PID:");
 		Serial.print(wsd->Packet_Id);
 		Serial.print(" ");
 		Serial.print(batteryVoltage);
 		Serial.print("V ");
-		Serial.println(wsd->Temperature);
+		Serial.print(wsd->Temperature);
+		Serial.print("C ");
+		Serial.print(rainVoltage);
+		Serial.println("V ");
 
 		Serial.print(wsd->AirPressure);
 		Serial.print("hPa ");
@@ -111,13 +228,16 @@ void loop()
 		Serial.print(wsd->Brightness);
 		Serial.println("Lux");
 		Serial.println();
+
+		Mirf.setRADDR((byte *)NRF_DEVICE_ADDR);
+		Mirf.config();
 	}
 }
 
 void Send_I2C()
 {
 	digitalWrite(I2C_INT_PIN, LOW);
-	delay(1);
+	delay(2);
 	digitalWrite(I2C_INT_PIN, HIGH);
 }
 
