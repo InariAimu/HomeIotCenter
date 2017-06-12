@@ -94,9 +94,9 @@ void setup()
 	Mirf.config();
 	delay(100);
 
-	Serial.print("Init");
+	InitLcd();
 
-	Serial1.println("CLS(0);");
+	Serial.print("Init");
 }
 
 // the loop function runs over and over again until power down or reset
@@ -232,6 +232,12 @@ void loop()
 		Mirf.setRADDR((byte *)NRF_DEVICE_ADDR);
 		Mirf.config();
 	}
+}
+
+void InitLcd()
+{
+
+	Serial1.println("CLS(0);");
 }
 
 void Send_I2C()
