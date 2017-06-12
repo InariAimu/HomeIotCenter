@@ -1,6 +1,7 @@
 
 *.suo
 
+.vs/
 __vm/
 Debug/
 Release/
