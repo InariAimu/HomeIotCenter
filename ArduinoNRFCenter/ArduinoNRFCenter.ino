@@ -67,6 +67,7 @@ typedef struct _Pt_SetClock
 void setup() 
 {
 	Serial.begin(115200);
+	I2C_Buffer.reserve(128);
 
 	LED_Strip.begin();
 	LED_Strip.show();
@@ -97,6 +98,8 @@ void setup()
 	InitLcd();
 
 	Serial.print("Init");
+	delay(500);
+	LogLcd("init");
 }
 
 // the loop function runs over and over again until power down or reset
@@ -122,7 +125,7 @@ void loop()
 			while (Mirf.isSending());
 			Serial.readStringUntil('\n');
 		}
-		else
+		else if (c == 'T')
 		{
 			Serial.println("send nrf lamp info");
 			((NrfPacket)data)->Id = (uint8_t)0;
@@ -131,11 +134,11 @@ void loop()
 			Pt_SetClock pc = (Pt_SetClock)(((NrfPacket)data)->Payload);
 			pc->Year = (uint8_t)17;
 			pc->Month = (uint8_t)6;
-			pc->Day = (uint8_t)11;
-			pc->Hour = (uint8_t)21;
-			pc->Minute = (uint8_t)52;
+			pc->Day = (uint8_t)12;
+			pc->Hour = (uint8_t)19;
+			pc->Minute = (uint8_t)37;
 			pc->Second = (uint8_t)0;
-			pc->Weekday = (uint8_t)7;
+			pc->Weekday = (uint8_t)1;
 			pc->TimeMode = '2';
 			for (int i = 0; i < 16; i++)
 			{
@@ -240,6 +243,30 @@ void InitLcd()
 	Serial1.println("CLS(0);");
 }
 
+int lcd_line = 0;
+void LogLcd(String s)
+{
+	if (120 + lcd_line * 12 > 240)
+	{
+		Serial1.println("CBOF(0,120,319,239,0,0);");
+		delay(10);
+		lcd_line = 0;
+	}
+	Serial1.print("DS12(0,");
+	Serial1.print(120+ lcd_line * 12);
+	Serial1.print(",'");
+	Serial1.print(s);
+	Serial1.println("',15);");
+	delay(10);
+
+	Serial.print("DS12(0,");
+	Serial.print(120 + lcd_line * 12);
+	Serial.print(",'");
+	Serial.print(s);
+	Serial.println("',15);");
+	lcd_line++;
+}
+
 void Send_I2C()
 {
 	digitalWrite(I2C_INT_PIN, LOW);
@@ -249,28 +276,49 @@ void Send_I2C()
 
 void I2C_OnReceive(int n)
 {
-	while (!Wire.available())
+	//if (Wire.available())
 	{
-	}
-	char c = Wire.read();
-	switch (c)
-	{
-	case 'R':
-		I2C_STAT = 1;
-		break;
-
-	case 'W':
-		if (Wire.available())
+		char c = Wire.read();
+		switch (c)
 		{
-			I2C_Buffer = Wire.readStringUntil('\n');
+		case 'R':
+			I2C_STAT = 1;
+			break;
+
+		case 'S':
+			I2C_STAT = 2;
+			break;
+
+		case 'P':
+			/*if (Wire.available())
+			{
+				//I2C_Buffer = Wire.readStringUntil('\n');
+				I2C_Buffer = Wire.readString();
+			}*/
+			I2C_Buffer = "";
+			while (Wire.available())
+			{
+				I2C_Buffer += (char)Wire.read();
+				
+			}
+			I2C_Buffer.trim();
+			LogLcd(I2C_Buffer);
+			break;
+
+		case 'W':
+			I2C_Buffer = "";
+			while (Wire.available())
+			{
+				I2C_Buffer += (char)Wire.read();
+			}
+			I2C_Buffer.trim();
+			Serial.println(I2C_Buffer);
+			break;
+
+		default:
+			break;
 		}
-		Serial.println(I2C_Buffer);
-		break;
-
-	default:
-		break;
 	}
-
 }
 
 void I2C_OnRequest()
@@ -286,5 +334,13 @@ void I2C_OnRequest()
 		Wire.write(ll);
 		Wire.write(lh);
 		I2C_STAT = 0;
+	}
+	else if (I2C_STAT == 2)
+	{
+		I2C_STAT = 0;
+		for (int i = 0; i<32; i++)
+		{
+			Wire.write(data[i]);
+		}
 	}
 }
